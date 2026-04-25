@@ -83,9 +83,10 @@ export function createServer() {
         return sendJson(response, 200, report);
       }
 
-      if (request.method === "GET" || request.method === "HEAD") {
-        return serveStatic(request, response, requestUrl.pathname);
-      }
+if (request.method === "GET" || request.method === "HEAD") {
+  if (existsSync(publicDir)) return serveStatic(request, response, requestUrl.pathname);
+  return sendJson(response, 404, { error: "Not found." });
+}
 
       sendJson(response, 405, { error: "This endpoint does not support the requested method." });
     } catch (error) {
@@ -146,6 +147,8 @@ function readJsonBody(request) {
     request.on("error", rejectBody);
   });
 }
+
+export default createServer();
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   createServer().listen(PORT, () => {
