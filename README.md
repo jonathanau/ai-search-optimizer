@@ -14,7 +14,3 @@ npm start
 ```
 
 Open <http://localhost:3000>, enter a URL, and run the audit.
-
-## TDD coverage
-
-The initial red/green tests cover URL normalization, robots.txt parsing, retrieval-vs-training crawler access, positive GEO scoring, and blocker detection for JavaScript-thin pages with blocked AI retrieval crawlers.
