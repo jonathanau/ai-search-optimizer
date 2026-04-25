@@ -4,7 +4,7 @@
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "Lumenyl is a web-based GEO audit tool for AI search optimization.",
+  "description": "Lumenyl is a web-based AI search intelligence platform for frontier answer-engine readiness.",
   "scripts": {
     "test": "node --test test/*.test.js",
     "start": "node src/server.js",

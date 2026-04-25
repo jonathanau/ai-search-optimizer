@@ -1,10 +1,10 @@
-# Lumenyl AI Search Optimizer
+# Lumenyl AI Search Intelligence
 
-A dependency-free Node.js web app for auditing a website's generative engine optimization (GEO) readiness: crawler access, server-rendered content, schema.org, answer-first passages, statistics with citations, entity footprint, llms.txt, sitemaps, and prioritized AI-search optimization actions.
+A dependency-free Node.js web app for benchmarking a website's readiness for frontier AI answer engines. Lumenyl evaluates crawler access, server-rendered content, schema.org depth, answer-ready passages, evidence-backed claims, entity authority, llms.txt, sitemaps, and prioritized AI-search visibility actions.
 
 ## Why this exists
 
-Many GEO workflows focus on AI visibility monitoring, prompt tracking, source/citation analysis, share-of-voice, and recommendations. Lumenyl turns those patterns into an actionable website audit that answers: **can AI answer engines fetch, understand, trust, extract, and cite this page?**
+Modern discovery is shifting from ranked links to AI-generated answers. Lumenyl translates enterprise GEO, prompt intelligence, citation analysis, and entity optimization patterns into an actionable readiness brief that answers: **can frontier AI systems discover, understand, trust, extract, and cite this page?**
 
 ## Run locally
 
@@ -13,4 +13,4 @@ npm test
 npm start
 ```
 
-Open <http://localhost:3000>, enter a URL, and run the audit.
+Open <http://localhost:3000>, enter a URL, and run the AI readiness analysis.

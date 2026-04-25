@@ -10,7 +10,7 @@ form.addEventListener("submit", async (event) => {
 });
 
 async function runAudit(url) {
-  setLoading(true, `Auditing ${url}… Fetching HTML, robots.txt, llms.txt, and sitemap signals.`);
+  setLoading(true, `Analyzing ${url}… Collecting HTML, robots.txt, llms.txt, and sitemap intelligence.`);
   reportEl.classList.add("hidden");
 
   try {
@@ -20,9 +20,9 @@ async function runAudit(url) {
       body: JSON.stringify({ url }),
     });
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.error || "Audit failed.");
+    if (!response.ok) throw new Error(payload.error || "AI readiness analysis failed.");
     renderReport(payload);
-    setLoading(false, "Audit complete.");
+    setLoading(false, "AI readiness analysis complete.");
     setTimeout(() => statusPanel.classList.add("hidden"), 1800);
   } catch (error) {
     setLoading(false, error.message, true);
@@ -68,26 +68,26 @@ function scoreHero(report) {
 
 function factsPanel(report) {
   const facts = [
-    ["Audited URL", report.url],
+    ["Analyzed URL", report.url],
     ["Brand", report.pageFacts.brand],
-    ["Visible words", report.pageFacts.visibleWords],
+    ["Visible content depth", report.pageFacts.visibleWords],
     ["Schema types", report.pageFacts.schemaTypes.join(", ") || "None"],
-    ["Authoritative links", report.pageFacts.authoritativeLinks],
+    ["Authority signals", report.pageFacts.authoritativeLinks],
     ["robots.txt", report.pageFacts.robotsPresent ? "Present" : "Missing"],
     ["llms.txt", report.pageFacts.llmsTxtPresent ? "Present" : "Missing"],
     ["Sitemap", report.pageFacts.sitemapPresent ? "Present" : "Missing"],
   ];
   const panel = el("section", "panel");
-  panel.innerHTML = `<h3>Page facts</h3><div class="fact-grid">${facts.map(([label, value]) => `<div class="fact"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value ?? "—"))}</strong></div>`).join("")}</div>`;
+  panel.innerHTML = `<h3>Intelligence snapshot</h3><div class="fact-grid">${facts.map(([label, value]) => `<div class="fact"><span>${escapeHtml(label)}</span><strong>${escapeHtml(String(value ?? "—"))}</strong></div>`).join("")}</div>`;
   return panel;
 }
 
 function actionsPanel(report) {
   const panel = el("section", "panel");
-  panel.innerHTML = `<h3>Prioritized GEO action plan</h3>`;
+  panel.innerHTML = `<h3>Prioritized AI visibility roadmap</h3>`;
   const grid = el("div", "actions-grid");
   if (!report.prioritizedActions.length) {
-    grid.innerHTML = `<p>No major actions were found. Keep monitoring AI visibility and citations over time.</p>`;
+    grid.innerHTML = `<p>No critical gaps surfaced. Continue monitoring AI visibility, citations, and entity signals as models evolve.</p>`;
   } else {
     for (const action of report.prioritizedActions.slice(0, 9)) {
       const card = el("article", "action-card");
@@ -106,7 +106,7 @@ function actionsPanel(report) {
 
 function sectionsPanel(report) {
   const panel = el("section", "panel");
-  panel.innerHTML = `<h3>Detailed audit checks</h3>`;
+  panel.innerHTML = `<h3>Readiness diagnostics</h3>`;
   const grid = el("div", "section-grid");
   for (const section of Object.values(report.sections)) {
     const card = el("article", "section-card");
@@ -138,7 +138,7 @@ function checkNode(check) {
 
 function promptsPanel(report) {
   const panel = el("section", "panel");
-  panel.innerHTML = `<h3>Prompt portfolio to monitor</h3>`;
+  panel.innerHTML = `<h3>Frontier prompt portfolio to monitor</h3>`;
   const grid = el("div", "prompt-grid");
   for (const prompt of report.promptPortfolio) {
     const card = el("article", "prompt-card");
@@ -151,11 +151,11 @@ function promptsPanel(report) {
 
 function benchmarkPanel(report) {
   const panel = el("section", "panel");
-  panel.innerHTML = `<h3>Incumbent-inspired product benchmark</h3>`;
+  panel.innerHTML = `<h3>AI search platform benchmark</h3>`;
   const grid = el("div", "benchmark-grid");
   for (const item of report.marketBenchmark.incumbentPatterns) {
     const card = el("article", "prompt-card");
-    card.innerHTML = `<h4>${escapeHtml(item.capability)}</h4><p><strong>Seen in:</strong> ${escapeHtml(item.seenIn.join(", "))}</p><p>${escapeHtml(item.howThisToolResponds)}</p>`;
+    card.innerHTML = `<h4>${escapeHtml(item.capability)}</h4><p><strong>Market signal:</strong> ${escapeHtml(item.seenIn.join(", "))}</p><p>${escapeHtml(item.howThisToolResponds)}</p>`;
     grid.append(card);
   }
   panel.append(grid);

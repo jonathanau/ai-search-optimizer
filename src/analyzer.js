@@ -69,7 +69,7 @@ const SOCIAL_OR_ENTITY_PATTERNS = [
 
 export function normalizeAuditUrl(input) {
   if (typeof input !== "string" || input.trim().length === 0) {
-    throw new Error("Enter a website URL to audit.");
+    throw new Error("Enter a website URL to analyze for AI readiness.");
   }
 
   let raw = input.trim();
@@ -233,7 +233,7 @@ export async function auditWebsite(inputUrl, options = {}) {
   ]);
 
   if (!page.ok) {
-    throw new Error(`The page returned HTTP ${page.status}. Audit a publicly reachable HTML page.`);
+    throw new Error(`The page returned HTTP ${page.status}. Analyze a publicly reachable HTML page.`);
   }
 
   const robots = robotsFetch.ok ? parseRobotsTxt(robotsFetch.text) : parseRobotsTxt("");
@@ -304,9 +304,9 @@ export function auditArtifacts({
     pageFacts,
     marketBenchmark: buildMarketBenchmark(),
     researchBasis: [
-      "Answer-first passages improve extractability for ChatGPT, Perplexity, Gemini, Claude, Copilot, and Google AI Overview style systems.",
-      "Verifiable statistics and authoritative outbound citations receive elevated weighting because GEO research repeatedly finds numeric claims are disproportionately extracted.",
-      "The audit separates retrieval crawlers from training crawlers so publishers can optimize citations without giving up separate training-use controls.",
+      "Answer-first passages improve extractability across frontier systems including ChatGPT, Perplexity, Gemini, Claude, Copilot, and Google AI Overviews.",
+      "Verifiable statistics and authoritative outbound citations receive elevated weighting because AI search research repeatedly finds numeric claims are disproportionately extracted.",
+      "This analysis separates retrieval crawlers from training crawlers so publishers can pursue AI citations while preserving separate training-use controls.",
     ],
   };
 }
@@ -406,7 +406,7 @@ function buildAccessSection({ robots, robotsTxt, sitemapXml, crawlerAccess }) {
     }),
   ];
 
-  return makeSection("access", "Crawler access & indexability", checks, "Can AI answer engines fetch and cite the page?");
+  return makeSection("access", "AI crawler access & indexability", checks, "Can frontier answer engines retrieve and cite the page?");
 }
 
 function buildTechnicalSection({ headerMap, parsedHtml, timings }) {
@@ -490,7 +490,7 @@ function buildTechnicalSection({ headerMap, parsedHtml, timings }) {
     }),
   ];
 
-  return makeSection("technical", "Technical crawlability", checks, "Is the page fast, stable, and readable without JavaScript?");
+  return makeSection("technical", "Technical retrieval performance", checks, "Is the page fast, stable, and legible to AI systems without JavaScript?");
 }
 
 function buildStructureSection({ parsedHtml }) {
@@ -514,7 +514,7 @@ function buildStructureSection({ parsedHtml }) {
       impact: "High",
       effort: "Medium",
       evidence: parsedHtml.schemaTypes.length ? `Detected schema types: ${parsedHtml.schemaTypes.join(", ")}.` : "No JSON-LD schema types detected.",
-      whyItMatters: "Structured data reduces entity ambiguity for AI answer engines and Google AI Overviews.",
+      whyItMatters: "Structured data reduces entity ambiguity for frontier answer engines and Google AI Overviews.",
       recommendation: "Add JSON-LD for Organization, Article/WebPage, Product/SoftwareApplication, FAQPage, and Person where relevant.",
     }),
     makeCheck({
@@ -525,7 +525,7 @@ function buildStructureSection({ parsedHtml }) {
       impact: "High",
       effort: "Medium",
       evidence: hasEntitySchema ? "A primary Organization/Product/Person-style entity includes name, URL, or sameAs." : "No primary entity schema with durable identifiers was found.",
-      whyItMatters: "AI systems cite and recommend entities, not just pages; entity clarity is central to GEO.",
+      whyItMatters: "AI systems cite and recommend entities, not just pages; entity clarity is central to modern AI search performance.",
       recommendation: "Mark up the brand, product, author, and sameAs profiles with stable identifiers.",
     }),
     makeCheck({
@@ -563,7 +563,7 @@ function buildStructureSection({ parsedHtml }) {
     }),
   ];
 
-  return makeSection("structure", "Structured data & entity clarity", checks, "Can machines identify what the page, brand, and content mean?");
+  return makeSection("structure", "Structured data & entity intelligence", checks, "Can AI systems identify what the page, brand, and content mean?");
 }
 
 function buildContentSection({ parsedHtml }) {
@@ -584,7 +584,7 @@ function buildContentSection({ parsedHtml }) {
   const checks = [
     makeCheck({
       id: "answer-first",
-      label: "The page leads with a direct answer",
+      label: "The page leads with an answer-ready executive summary",
       status: answerFirst ? "pass" : firstParagraph ? "warn" : "fail",
       weight: 12,
       impact: "High",
@@ -606,7 +606,7 @@ function buildContentSection({ parsedHtml }) {
       impact: "High",
       effort: "Medium",
       evidence: `${parsedHtml.numericClaims.length} numeric claim(s), ${parsedHtml.authoritativeLinks.length} authoritative external source link(s).`,
-      whyItMatters: "GEO research shows numeric claims with citations are among the most reliably extracted answer ingredients.",
+      whyItMatters: "AI search research shows numeric claims with citations are among the most reliably extracted answer ingredients.",
       recommendation: "Add dated statistics, percentages, benchmarks, sample sizes, and source links near the relevant claim.",
     }),
     makeCheck({
@@ -619,7 +619,7 @@ function buildContentSection({ parsedHtml }) {
       evidence: parsedHtml.authoritativeLinks.length
         ? `Authoritative domains: ${unique(parsedHtml.authoritativeLinks.map((link) => link.hostname)).slice(0, 5).join(", ")}.`
         : "No authoritative outbound citations detected.",
-      whyItMatters: "Citing trusted sources helps answer engines trust your own synthesis and identify primary evidence.",
+      whyItMatters: "Citing trusted sources helps frontier answer engines trust your synthesis and identify primary evidence.",
       recommendation: "Reference original studies, standards, documentation, government data, or recognized industry research.",
     }),
     makeCheck({
@@ -680,7 +680,7 @@ function buildContentSection({ parsedHtml }) {
     }),
   ];
 
-  return makeSection("content", "Answer quality & citation worthiness", checks, "Would an AI system find concise, trustworthy passages to quote?");
+  return makeSection("content", "Answer quality & citation potential", checks, "Would an AI system find concise, trustworthy passages to quote?");
 }
 
 function buildAuthoritySection({ parsedHtml, pageFacts }) {
@@ -748,7 +748,7 @@ function buildAuthoritySection({ parsedHtml, pageFacts }) {
     }),
   ];
 
-  return makeSection("authority", "Brand authority & entity footprint", checks, "Will AI systems recognize and trust the entity behind the page?");
+  return makeSection("authority", "Brand authority & entity footprint", checks, "Will frontier AI systems recognize and trust the entity behind the page?");
 }
 
 function buildStandardsSection({ headerMap, robots, robotsTxt, llmsTxt, sitemapXml }) {
@@ -760,13 +760,13 @@ function buildStandardsSection({ headerMap, robots, robotsTxt, llmsTxt, sitemapX
   const checks = [
     makeCheck({
       id: "llms-txt",
-      label: "llms.txt provides an LLM-friendly content map",
+      label: "llms.txt provides an LLM-native content map",
       status: llmsLooksUseful ? "pass" : hasLlmsTxt ? "warn" : "warn",
       weight: 4,
       impact: "Low",
       effort: "Low",
       evidence: llmsLooksUseful ? "llms.txt contains headings and absolute links." : hasLlmsTxt ? "llms.txt exists but may need clearer Markdown links." : "No llms.txt content detected.",
-      whyItMatters: "llms.txt has mixed adoption, but it is low-cost insurance for documentation and developer-tool LLM workflows.",
+      whyItMatters: "llms.txt is still emerging, but it is low-cost insurance for documentation and developer-tool LLM workflows.",
       recommendation: "Publish /llms.txt with a concise description, canonical docs, pricing, product, research, and changelog links.",
     }),
     makeCheck({
@@ -782,7 +782,7 @@ function buildStandardsSection({ headerMap, robots, robotsTxt, llmsTxt, sitemapX
     }),
     makeCheck({
       id: "ai-disclosure-header",
-      label: "AI content disclosure/provenance header is present where relevant",
+      label: "AI content disclosure and provenance signals are present where relevant",
       status: aiDisclosure ? "pass" : "warn",
       weight: 1,
       impact: "Low",
@@ -804,7 +804,7 @@ function buildStandardsSection({ headerMap, robots, robotsTxt, llmsTxt, sitemapX
     }),
   ];
 
-  return makeSection("standards", "Emerging AI standards", checks, "Does the site use low-cost standards that may help future AI retrieval?");
+  return makeSection("standards", "Emerging AI standards", checks, "Does the site use forward-looking standards that may shape future AI retrieval?");
 }
 
 function buildPageFacts({ target, headerMap, parsedHtml, robots, robotsTxt, llmsTxt, sitemapXml, timings, httpStatus, brand, category }) {
@@ -844,7 +844,7 @@ function scoreReport(sections) {
   return {
     overall,
     grade: gradeForScore(overall),
-    status: overall >= 85 ? "AI citation-ready" : overall >= 70 ? "Strong foundation" : overall >= 50 ? "Needs optimization" : "Major GEO blockers",
+    status: overall >= 85 ? "AI citation-ready" : overall >= 70 ? "Strong AI search foundation" : overall >= 50 ? "Optimization required" : "Critical AI visibility blockers",
     sections: sectionScores,
   };
 }
@@ -864,7 +864,7 @@ function buildSummary(score, sections, actions, facts) {
 
   return {
     verdict: score.status,
-    oneSentence: `${facts.brand || facts.host} scores ${score.overall}/100 (${score.grade}) for AI search readiness; ${actions.length ? `the top fix is: ${actions[0].title}.` : "no major fixes were detected."}`,
+    oneSentence: `${facts.brand || facts.host} scores ${score.overall}/100 (${score.grade}) for AI search readiness; ${actions.length ? `the highest-priority opportunity is: ${actions[0].title}.` : "no critical gaps were detected."}`,
     strengths,
     risks,
   };
@@ -907,7 +907,7 @@ function generatePromptPortfolio({ brand, category, target, parsedHtml }) {
     .map((heading) => ({
       intent: "Section extraction",
       prompt: `${heading.text.replace(/\?$/, "")} — what should buyers know?`,
-      successSignals: ["The answer cites the audited page", "The answer repeats the section's direct claim", "The answer includes a statistic or source"],
+      successSignals: ["The answer cites the analyzed page", "The answer repeats the section's direct claim", "The answer includes a statistic or source"],
     }));
 
   return [
@@ -961,7 +961,7 @@ function buildMarketBenchmark() {
       {
         capability: "Citation/source analysis",
         seenIn: ["Otterly.AI", "AthenaHQ", "Ahrefs Brand Radar"],
-        howThisToolResponds: "Audits outbound authority, crawl access, extractability, schema, and source-worthy statistics.",
+        howThisToolResponds: "Analyzes outbound authority, crawl access, extractability, schema, and source-worthy statistics.",
       },
       {
         capability: "Share-of-voice and competitor benchmarking",
@@ -971,7 +971,7 @@ function buildMarketBenchmark() {
       {
         capability: "Optimization recommendations",
         seenIn: ["AthenaHQ", "Otterly.AI", "Peec AI"],
-        howThisToolResponds: "Ranks fixes by impact, effort, and GEO evidence rather than only reporting visibility metrics.",
+        howThisToolResponds: "Ranks fixes by impact, effort, and AI-search evidence rather than only reporting visibility metrics.",
       },
     ],
   };
@@ -1263,7 +1263,7 @@ function gradeForScore(score) {
 }
 
 function defaultNextSteps(check) {
-  return [check.recommendation, "Re-run the audit after publishing the change."];
+  return [check.recommendation, "Re-run the AI readiness analysis after publishing the change."];
 }
 
 function sentenceCase(value) {

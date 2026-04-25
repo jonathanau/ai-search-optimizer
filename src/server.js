@@ -29,7 +29,7 @@ export function createServer() {
       if (request.method === "POST" && requestUrl.pathname === "/api/audit") {
         const body = await readJsonBody(request);
         if (!body.url || typeof body.url !== "string") {
-          return sendJson(response, 400, { error: "Provide a website URL as { url }." });
+          return sendJson(response, 400, { error: "Provide a website URL for AI readiness analysis as { url }." });
         }
         const report = await auditWebsite(body.url);
         return sendJson(response, 200, report);
@@ -39,10 +39,10 @@ export function createServer() {
         return serveStatic(request, response, requestUrl.pathname);
       }
 
-      sendJson(response, 405, { error: "Method not allowed." });
+      sendJson(response, 405, { error: "This endpoint does not support the requested method." });
     } catch (error) {
       const status = /valid website|http or https|returned HTTP|URL/i.test(error.message) ? 400 : 500;
-      sendJson(response, status, { error: error.message || "Unexpected server error." });
+      sendJson(response, status, { error: error.message || "Unexpected analysis service error." });
     }
   });
 }
@@ -54,7 +54,7 @@ function serveStatic(request, response, pathname) {
 
   if (!absolutePath.startsWith(publicDir) || !existsSync(absolutePath) || !statSync(absolutePath).isFile()) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-    response.end("Not found");
+    response.end("Resource not found");
     return;
   }
 
@@ -98,6 +98,6 @@ function readJsonBody(request) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   createServer().listen(PORT, () => {
-    console.log(`Lumenyl running at http://localhost:${PORT}`);
+    console.log(`Lumenyl AI Search Intelligence running at http://localhost:${PORT}`);
   });
 }
