@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Search Optimizer | GEO & AEO Audit Tool</title>
+    <meta
+      name="description"
+      content="Audit any website for generative engine optimization, answer engine optimization, crawler access, schema, answer-first content, and citation readiness."
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <nav class="nav">
+        <div class="brand-mark">ASO</div>
+        <div>
+          <strong>AI Search Optimizer</strong>
+          <span>GEO / AEO technical and content audit</span>
+        </div>
+      </nav>
+
+      <section class="hero-grid">
+        <div>
+          <p class="eyebrow">Built for ChatGPT, Perplexity, Claude, Gemini, Copilot & Google AI Overviews</p>
+          <h1>Find out whether AI answer engines can fetch, trust, extract, and cite your website.</h1>
+          <p class="hero-copy">
+            Enter a URL to get a prioritized GEO report: retrieval crawler access, JavaScript risk, schema.org coverage,
+            answer-first copy, statistics with sources, entity footprint, llms.txt, and concrete next steps.
+          </p>
+        </div>
+
+        <form id="audit-form" class="audit-card">
+          <label for="url">Website URL</label>
+          <div class="input-row">
+            <input id="url" name="url" type="text" placeholder="example.com" autocomplete="url" required />
+            <button type="submit">Run GEO audit</button>
+          </div>
+          <p class="form-note">Tip: audit a specific product, guide, or documentation page—not only the homepage.</p>
+          <div class="quick-examples">
+            <button type="button" data-url="https://peec.ai/">Try Peec AI</button>
+            <button type="button" data-url="https://otterly.ai/">Try Otterly</button>
+            <button type="button" data-url="https://ahrefs.com/brand-radar">Try Ahrefs Brand Radar</button>
+          </div>
+        </form>
+      </section>
+    </header>
+
+    <main>
+      <section id="status" class="status-panel hidden" aria-live="polite"></section>
+      <section id="report" class="report hidden"></section>
+    </main>
+
+    <template id="check-template">
+      <article class="check">
+        <div class="check-header">
+          <span class="pill"></span>
+          <h4></h4>
+        </div>
+        <p class="evidence"></p>
+        <details>
+          <summary>Why this matters and how to fix it</summary>
+          <p class="why"></p>
+          <p class="recommendation"></p>
+        </details>
+      </article>
+    </template>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
