@@ -39,6 +39,8 @@ const SECURITY_HEADERS = {
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
   "Content-Security-Policy":
     "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; script-src 'self'; connect-src 'self'",
+  "AI-Disclosure": "human-authored",
+  "Content-Usage": "ai-allowed",
 };
 
 function setSecurityHeaders(response) {
