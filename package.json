@@ -1,10 +1,10 @@
 {
-  "name": "ai-search-optimizer",
+  "name": "lumenyl",
   "version": "0.1.0",
   "private": true,
   "license": "Apache-2.0",
   "type": "module",
-  "description": "A web-based GEO/AEO audit tool for AI search optimization.",
+  "description": "Lumenyl is a web-based GEO audit tool for AI search optimization.",
   "scripts": {
     "test": "node --test test/*.test.js",
     "start": "node src/server.js",

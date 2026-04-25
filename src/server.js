@@ -23,7 +23,7 @@ export function createServer() {
 
     try {
       if (request.method === "GET" && requestUrl.pathname === "/api/health") {
-        return sendJson(response, 200, { ok: true, service: "ai-search-optimizer" });
+        return sendJson(response, 200, { ok: true, service: "lumenyl" });
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/audit") {
@@ -98,6 +98,6 @@ function readJsonBody(request) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   createServer().listen(PORT, () => {
-    console.log(`AI Search Optimizer running at http://localhost:${PORT}`);
+    console.log(`Lumenyl running at http://localhost:${PORT}`);
   });
 }
