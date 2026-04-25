@@ -660,7 +660,19 @@ summary:hover { color: var(--brand-dark); }
 @media (max-width: 560px) {
   .fact-grid { grid-template-columns: 1fr; }
   main { width: min(100vw - 24px, 1180px); }
-  .hero { padding-inline: 16px; }
+  .hero { padding-inline: 16px; padding-top: 20px; }
+  .nav { 
+    padding: 12px 16px; 
+    gap: 8px; 
+    margin-bottom: 40px;
+    align-items: center;
+  }
+  .nav-links { gap: 10px; }
+  .brand-text { font-size: 1.05rem; }
+  .nav-links a { 
+    font-size: 0.9rem;
+    padding: 4px 0; /* Add vertical space for descenders */
+  }
   .score-circle { width: 160px; height: 160px; }
   .score-circle strong { font-size: 3rem; }
   .content-section { width: min(100vw - 24px, 1180px); }
