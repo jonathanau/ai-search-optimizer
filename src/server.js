@@ -9,6 +9,44 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 const publicDir = resolve(__dirname, "..", "public");
 const PORT = Number(process.env.PORT || 3000);
 
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQUESTS = 10;
+const rateLimitMap = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+  if (!record || now - record.windowStart > RATE_LIMIT_WINDOW_MS) {
+    rateLimitMap.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+  record.count += 1;
+  return record.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, record] of rateLimitMap) {
+    if (now - record.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitMap.delete(ip);
+  }
+}, RATE_LIMIT_WINDOW_MS * 2).unref();
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+  "Content-Security-Policy":
+    "default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self'; script-src 'self'; connect-src 'self'",
+};
+
+function setSecurityHeaders(response) {
+  for (const [header, value] of Object.entries(SECURITY_HEADERS)) {
+    response.setHeader(header, value);
+  }
+}
+
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
@@ -23,6 +61,7 @@ const MIME_TYPES = {
 export function createServer() {
   return createHttpServer(async (request, response) => {
     const requestUrl = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
+    setSecurityHeaders(response);
 
     try {
       if (request.method === "GET" && requestUrl.pathname === "/api/health") {
@@ -30,6 +69,10 @@ export function createServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/audit") {
+        const clientIp = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.socket.remoteAddress || "unknown";
+        if (isRateLimited(clientIp)) {
+          return sendJson(response, 429, { error: "Too many requests. Please wait before analyzing another URL." });
+        }
         const body = await readJsonBody(request);
         if (!body.url || typeof body.url !== "string") {
           return sendJson(response, 400, { error: "Provide a website URL for AI readiness analysis as { url }." });
@@ -44,8 +87,11 @@ export function createServer() {
 
       sendJson(response, 405, { error: "This endpoint does not support the requested method." });
     } catch (error) {
-      const status = /valid website|http or https|returned HTTP|URL/i.test(error.message) ? 400 : 500;
-      sendJson(response, status, { error: error.message || "Unexpected analysis service error." });
+      const isClientError = /valid website|http or https|returned HTTP|URL|too large|not allowed|not publicly|not resolve/i.test(error.message);
+      const status = isClientError ? 400 : 500;
+      const message = isClientError ? error.message : "Unexpected analysis service error.";
+      sendJson(response, status, { error: message });
+      if (!isClientError) console.error("Audit error:", error);
     }
   });
 }

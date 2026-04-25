@@ -1,4 +1,48 @@
+import { lookup } from "node:dns/promises";
+
 const DEFAULT_TIMEOUT_MS = 12_000;
+const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
+
+const PRIVATE_IP_RANGES = [
+  /^127\./,
+  /^10\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^192\.168\./,
+  /^169\.254\./,
+  /^0\./,
+  /^::1$/,
+  /^fc/i,
+  /^fd/i,
+  /^fe80:/i,
+];
+
+const PRIVATE_HOSTNAMES = /^(localhost|.*\.local|.*\.internal|.*\.corp)$/i;
+
+async function validateNotPrivate(url) {
+  const parsed = new URL(url);
+  const hostname = parsed.hostname;
+
+  if (PRIVATE_HOSTNAMES.test(hostname)) {
+    throw new Error("Internal addresses are not allowed.");
+  }
+
+  const bareHost = hostname.replace(/^\[|\]$/g, "");
+  if (/^\d+\.\d+\.\d+\.\d+$/.test(bareHost) || bareHost.includes(":")) {
+    if (PRIVATE_IP_RANGES.some((range) => range.test(bareHost))) {
+      throw new Error("Internal addresses are not allowed.");
+    }
+  }
+
+  try {
+    const { address } = await lookup(hostname);
+    if (PRIVATE_IP_RANGES.some((range) => range.test(address))) {
+      throw new Error("The resolved address is not publicly routable.");
+    }
+  } catch (error) {
+    if (error.message.includes("not allowed") || error.message.includes("not publicly")) throw error;
+    throw new Error("Could not resolve the website hostname.");
+  }
+}
 
 export const RETRIEVAL_CRAWLERS = [
   { agent: "OAI-SearchBot", provider: "OpenAI", priority: "primary" },
@@ -222,6 +266,7 @@ export function assessCrawlerAccess(robots, userAgent, path = "/") {
 
 export async function auditWebsite(inputUrl, options = {}) {
   const target = normalizeAuditUrl(inputUrl);
+  await validateNotPrivate(target.href);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const robotsUrl = new URL("/robots.txt", target.origin).href;
   const llmsUrl = new URL("/llms.txt", target.origin).href;
@@ -1180,6 +1225,7 @@ function robotsRuleLength(path) {
 
 function robotsPathMatches(pattern, path) {
   if (!pattern) return false;
+  if ((pattern.match(/\*/g) || []).length > 3) return false;
   const escaped = pattern
     .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
     .replace(/\*/g, ".*");
@@ -1320,10 +1366,14 @@ async function fetchText(url, { timeoutMs = DEFAULT_TIMEOUT_MS, accept = "*/*" }
       signal: controller.signal,
       headers: {
         Accept: accept,
-        "User-Agent": "AI-Search-Optimizer/0.1 (+https://localhost; GEO audit)",
+        "User-Agent": "Lumenyl/0.1 (+https://lumenyl.onrender.com; AI readiness audit)",
       },
     });
-    const text = await response.text();
+    const buffer = await response.arrayBuffer();
+    if (buffer.byteLength > MAX_RESPONSE_BYTES) {
+      throw new Error(`Response too large to analyze (${Math.round(buffer.byteLength / 1024)} KB).`);
+    }
+    const text = new TextDecoder().decode(buffer);
     return {
       ok: response.ok,
       status: response.status,
