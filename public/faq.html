@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050508" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <title>FAQ | Lumenyl</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <header class="hero">
+      <nav class="nav">
+        <a href="/" class="nav-brand">
+          <img class="brand-mark" src="/logo.png?v=1" alt="Lumenyl Logo" style="object-fit: cover;" />
+          <div>
+            <strong>Lumenyl</strong>
+            <span>Frontier AI search intelligence for technical, content, and entity readiness</span>
+          </div>
+        </a>
+        <div class="nav-links">
+          <a href="/">Audit</a>
+          <a href="/about.html">About</a>
+          <a href="/faq.html" class="active">FAQ</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="content-section" aria-labelledby="faq">
+        <h2 id="faq">Frequently asked questions</h2>
+        <div class="faq-list">
+          <article class="faq-item">
+            <h3>What is Lumenyl?</h3>
+            <p>Lumenyl is a free AI search readiness platform that benchmarks whether frontier answer engines like ChatGPT, Perplexity, Claude, Gemini, and Microsoft Copilot can discover, understand, trust, extract, and cite your website. It evaluates 30+ checks across 6 weighted dimensions and produces a prioritized remediation roadmap.</p>
+          </article>
+          <article class="faq-item">
+            <h3>How do I check my website's AI search readiness?</h3>
+            <p>Enter any public URL into the Lumenyl audit form and click Analyze AI readiness. Lumenyl fetches the page HTML, robots.txt, llms.txt, and sitemap, then scores the page across AI crawler access, server-rendered content, structured data depth, answer-ready passages, citation authority, entity clarity, and emerging AI standards. The full audit completes in under 15 seconds.</p>
+          </article>
+          <article class="faq-item">
+            <h3>Which AI crawlers does Lumenyl check?</h3>
+            <p>Lumenyl checks 5 AI retrieval crawlers (OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, and bingbot), 5 training crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, and CCBot), and 3 on-demand assistant fetchers (ChatGPT-User, Claude-User, and Perplexity-User). It separates retrieval access from training policy so you can pursue AI citations while maintaining separate training-use controls.</p>
+          </article>
+          <article class="faq-item">
+            <h3>What does a Lumenyl AI readiness report include?</h3>
+            <p>Each report includes an overall readiness score out of 100 with a letter grade, section-level scores across 6 dimensions, an intelligence snapshot of detected brand and content depth, a prioritized AI visibility roadmap sorted by severity and impact, diagnostic checks with evidence and recommendations, a prompt portfolio for monitoring frontier answer engines, and a market benchmark mapping Lumenyl's checks to common AI search intelligence platform patterns.</p>
+          </article>
+          <article class="faq-item">
+            <h3>Is Lumenyl free?</h3>
+            <p>Yes. Lumenyl is free and open source. It runs locally with Node.js 18+ and has zero runtime dependencies. You can also use the hosted version at lumenyl.onrender.com without an account or API key.</p>
+          </article>
+          <article class="faq-item">
+            <h3>How is Lumenyl different from traditional SEO tools?</h3>
+            <p>Traditional SEO tools optimize for ranked links in search results. Lumenyl optimizes for AI-generated answers. It evaluates whether AI systems can extract and cite your content, checks AI-specific crawler access separately from training crawlers, analyzes answer-ready passages and evidence-backed claims, and tracks emerging standards like llms.txt and AI content-usage preference headers.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Lumenyl AI Search Intelligence · Last updated April 2026 · <a href="https://github.com/jonathanau/ai-search-optimizer">GitHub</a></p>
+      <p class="footer-note">Lumenyl is a readiness benchmark, not a guarantee of inclusion in any AI answer engine. Frontier systems use private ranking, retrieval, freshness, safety, personalization, and citation-selection logic that can change without notice.</p>
+    </footer>
+  </body>
+</html>

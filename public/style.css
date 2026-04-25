@@ -71,7 +71,8 @@ body {
 .nav {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 32px;
   margin-bottom: 60px;
   padding: 12px 24px;
   background: var(--panel);
@@ -79,10 +80,35 @@ body {
   border: 1px solid var(--line);
   backdrop-filter: blur(16px);
   box-shadow: var(--shadow);
-  width: fit-content;
+  width: 100%;
 }
 
-.nav span { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-brand span { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+
+.nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--ink);
+}
 
 img.brand-mark, .brand-mark {
   width: 48px;

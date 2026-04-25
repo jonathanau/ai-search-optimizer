@@ -151,10 +151,17 @@
     <div class="bg-glow bg-glow-2"></div>
     <header class="hero">
       <nav class="nav">
-        <img class="brand-mark" src="/logo.png?v=1" alt="Lumenyl Logo" style="object-fit: cover;" />
-        <div>
-          <strong>Lumenyl</strong>
-          <span>Frontier AI search intelligence for technical, content, and entity readiness</span>
+        <a href="/" class="nav-brand">
+          <img class="brand-mark" src="/logo.png?v=1" alt="Lumenyl Logo" style="object-fit: cover;" />
+          <div>
+            <strong>Lumenyl</strong>
+            <span>Frontier AI search intelligence for technical, content, and entity readiness</span>
+          </div>
+        </a>
+        <div class="nav-links">
+          <a href="/" class="active">Audit</a>
+          <a href="/about.html">About</a>
+          <a href="/faq.html">FAQ</a>
         </div>
       </nav>
 
@@ -180,84 +187,6 @@
     </header>
 
     <main>
-      <section class="content-section" aria-labelledby="how-it-works">
-        <h2 id="how-it-works">How Lumenyl works</h2>
-        <p>
-          Lumenyl fetches your page HTML, <code>robots.txt</code>, <code>llms.txt</code>, and sitemap in parallel, then scores the page across 6 weighted dimensions that determine whether AI answer engines can retrieve and cite your content.
-          According to <a href="https://dl.acm.org/doi/10.1145/3637528.3671900">Princeton and IIT Delhi GEO research published at ACM KDD 2024</a>, pages with verifiable statistics and citation-rich passages see 30% to 41% higher visibility in AI-generated answers.
-          <a href="https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-forecasts-organic-search-traffic-will-decline-25-percent-by-2026-due-to-generative-ai-search-engines">Gartner projects traditional search traffic will decline 25% by 2026</a> as users shift to AI-generated answers.
-        </p>
-      </section>
-
-      <section class="content-section" aria-labelledby="what-it-checks">
-        <h2 id="what-it-checks">What Lumenyl checks — 6 dimensions, 30+ diagnostic checks</h2>
-        <div class="dimension-grid">
-          <article class="dimension-card">
-            <h3>AI crawler access &amp; indexability</h3>
-            <p>Checks 5 AI retrieval crawlers (OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, bingbot), 5 training crawlers, and 3 on-demand fetchers. Separates citation access from training policy so you can pursue AI citations while maintaining separate training-use controls. Validates sitemap discovery and robots.txt parseability.</p>
-          </article>
-          <article class="dimension-card">
-            <h3>Answer quality &amp; citation potential</h3>
-            <p>Evaluates answer-first executive summaries, verifiable statistics paired with sources, authoritative outbound citations, concise extractable paragraphs under 80 words, FAQ-style question-answer coverage, expert evidence language, original data signals, and content freshness dates. Research shows numeric claims with citations are disproportionately extracted by AI systems.</p>
-          </article>
-          <article class="dimension-card">
-            <h3>Structured data &amp; entity intelligence</h3>
-            <p>Analyzes JSON-LD and <a href="https://schema.org/">schema.org</a> coverage including Organization, Product, Person, FAQPage, and SoftwareApplication types. Checks primary entity machine-readability, title and meta description quality, heading hierarchy for extractable answer sections, and Open Graph metadata for consistent entity wording.</p>
-          </article>
-          <article class="dimension-card">
-            <h3>Technical retrieval performance</h3>
-            <p>Validates HTML content type, server-rendered content availability without JavaScript, response speed under 1.5 seconds for crawler budgets, canonical URL declaration, document language metadata, and mobile viewport configuration. Most AI crawlers execute limited JavaScript; app-shell pages often look blank to retrieval indexes.</p>
-          </article>
-          <article class="dimension-card">
-            <h3>Brand authority &amp; entity footprint</h3>
-            <p>Checks brand name consistency across title, H1, and schema. Evaluates sameAs and entity links for <a href="https://www.linkedin.com/">LinkedIn</a>, <a href="https://www.crunchbase.com/">Crunchbase</a>, <a href="https://www.wikidata.org/">Wikidata</a>, and <a href="https://github.com/">GitHub</a>. Looks for author or reviewer expertise signals, authoritative outbound references, and community or knowledge-base mentions.</p>
-          </article>
-          <article class="dimension-card">
-            <h3>Emerging AI standards</h3>
-            <p>Checks for <code>llms.txt</code> with valid Markdown headings and absolute links, XML sitemap hygiene, AI content disclosure and provenance headers, and early AI content-usage preference signals aligned with <a href="https://www.ietf.org/">IETF</a> AIPREF work. These signals are low-cost insurance for future LLM retrieval workflows.</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="content-section" aria-labelledby="why-it-matters">
-        <h2 id="why-it-matters">Why AI search readiness matters</h2>
-        <p>
-          Modern discovery is shifting from ranked links to AI-generated answers. When a user asks ChatGPT, Perplexity, or Google AI Overviews a question, the AI system retrieves, evaluates, and synthesizes content from the web.
-          Pages that are technically accessible, structurally clear, citation-worthy, and entity-unambiguous are far more likely to be extracted and cited.
-          According to <a href="https://www.semrush.com/blog/ai-search-study/">Semrush AI search research</a>, pages with structured data, answer-first content, and authoritative citations consistently outperform in AI-generated answers.
-          Lumenyl translates these patterns into an actionable readiness brief that answers one question: <strong>can frontier AI systems discover, understand, trust, extract, and cite your page?</strong>
-        </p>
-      </section>
-
-      <section class="content-section" aria-labelledby="faq">
-        <h2 id="faq">Frequently asked questions</h2>
-        <div class="faq-list">
-          <article class="faq-item">
-            <h3>What is Lumenyl?</h3>
-            <p>Lumenyl is a free AI search readiness platform that benchmarks whether frontier answer engines like ChatGPT, Perplexity, Claude, Gemini, and Microsoft Copilot can discover, understand, trust, extract, and cite your website. It evaluates 30+ checks across 6 weighted dimensions and produces a prioritized remediation roadmap.</p>
-          </article>
-          <article class="faq-item">
-            <h3>How do I check my website's AI search readiness?</h3>
-            <p>Enter any public URL into the Lumenyl audit form and click Analyze AI readiness. Lumenyl fetches the page HTML, robots.txt, llms.txt, and sitemap, then scores the page across AI crawler access, server-rendered content, structured data depth, answer-ready passages, citation authority, entity clarity, and emerging AI standards. The full audit completes in under 15 seconds.</p>
-          </article>
-          <article class="faq-item">
-            <h3>Which AI crawlers does Lumenyl check?</h3>
-            <p>Lumenyl checks 5 AI retrieval crawlers (OAI-SearchBot, Claude-SearchBot, PerplexityBot, Googlebot, and bingbot), 5 training crawlers (GPTBot, ClaudeBot, Google-Extended, Applebot-Extended, and CCBot), and 3 on-demand assistant fetchers (ChatGPT-User, Claude-User, and Perplexity-User). It separates retrieval access from training policy so you can pursue AI citations while maintaining separate training-use controls.</p>
-          </article>
-          <article class="faq-item">
-            <h3>What does a Lumenyl AI readiness report include?</h3>
-            <p>Each report includes an overall readiness score out of 100 with a letter grade, section-level scores across 6 dimensions, an intelligence snapshot of detected brand and content depth, a prioritized AI visibility roadmap sorted by severity and impact, diagnostic checks with evidence and recommendations, a prompt portfolio for monitoring frontier answer engines, and a market benchmark mapping Lumenyl's checks to common AI search intelligence platform patterns.</p>
-          </article>
-          <article class="faq-item">
-            <h3>Is Lumenyl free?</h3>
-            <p>Yes. Lumenyl is free and open source. It runs locally with Node.js 18+ and has zero runtime dependencies. You can also use the hosted version at lumenyl.onrender.com without an account or API key.</p>
-          </article>
-          <article class="faq-item">
-            <h3>How is Lumenyl different from traditional SEO tools?</h3>
-            <p>Traditional SEO tools optimize for ranked links in search results. Lumenyl optimizes for AI-generated answers. It evaluates whether AI systems can extract and cite your content, checks AI-specific crawler access separately from training crawlers, analyzes answer-ready passages and evidence-backed claims, and tracks emerging standards like llms.txt and AI content-usage preference headers.</p>
-          </article>
-        </div>
-      </section>
 
       <section id="status" class="status-panel hidden" aria-live="polite"></section>
       <section id="report" class="report hidden"></section>
