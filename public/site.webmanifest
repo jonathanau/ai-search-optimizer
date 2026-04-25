@@ -1,0 +1,18 @@
+{
+  "name": "Lumenyl AI Search Intelligence",
+  "short_name": "Lumenyl",
+  "description": "Benchmark websites for AI search readiness across crawler access, structured data, citation authority, and emerging LLM standards.",
+  "start_url": "https://lumenyl.onrender.com/",
+  "scope": "https://lumenyl.onrender.com/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
