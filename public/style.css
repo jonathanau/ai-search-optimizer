@@ -133,19 +133,6 @@ button:disabled { opacity: 0.65; cursor: wait; transform: none; }
 
 .form-note { color: var(--muted); line-height: 1.5; margin-bottom: 14px; }
 
-.quick-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.quick-examples button {
-  background: #eef2ff;
-  color: #3730a3;
-  padding: 9px 12px;
-  font-size: 0.88rem;
-}
-
 main {
   width: min(1180px, calc(100vw - 36px));
   margin: -28px auto 70px;

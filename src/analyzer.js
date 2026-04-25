@@ -641,7 +641,7 @@ function buildContentSection({ parsedHtml }) {
       impact: "Medium",
       effort: "Low",
       evidence: hasFaq ? "FAQ/question signals detected." : "No FAQPage schema, FAQ heading, or repeated question-answer structure detected.",
-      whyItMatters: "AEO/GEO systems are prompt-shaped; explicit Q&A sections map directly to user questions.",
+      whyItMatters: "AI search systems are prompt-shaped; explicit Q&A sections map directly to user questions.",
       recommendation: "Add 4-8 concise FAQs that match high-intent prompts and mark them up with FAQPage where appropriate.",
     }),
     makeCheck({

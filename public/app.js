@@ -9,13 +9,6 @@ form.addEventListener("submit", async (event) => {
   await runAudit(input.value);
 });
 
-document.querySelectorAll("[data-url]").forEach((button) => {
-  button.addEventListener("click", () => {
-    input.value = button.dataset.url;
-    form.requestSubmit();
-  });
-});
-
 async function runAudit(url) {
   setLoading(true, `Auditing ${url}… Fetching HTML, robots.txt, llms.txt, and sitemap signals.`);
   reportEl.classList.add("hidden");
