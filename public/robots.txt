@@ -47,4 +47,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://lumenyl.onrender.com/sitemap.xml
+Sitemap: https://lumenyl.vercel.app/sitemap.xml

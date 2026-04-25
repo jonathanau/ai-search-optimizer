@@ -1366,7 +1366,7 @@ async function fetchText(url, { timeoutMs = DEFAULT_TIMEOUT_MS, accept = "*/*" }
       signal: controller.signal,
       headers: {
         Accept: accept,
-        "User-Agent": "Lumenyl/0.1 (+https://lumenyl.onrender.com; AI readiness audit)",
+        "User-Agent": "Lumenyl/0.1 (+https://lumenyl.vercel.app; AI readiness audit)",
       },
     });
     const buffer = await response.arrayBuffer();

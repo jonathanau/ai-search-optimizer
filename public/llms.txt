@@ -6,7 +6,7 @@
 
 - **What it does**: Evaluates 30+ checks across 6 weighted dimensions covering AI crawler access, server-rendered content, schema.org depth, answer-ready passages, citation authority, and emerging LLM standards.
 - **Who it's for**: SEO teams, content strategists, developer advocates, and marketing teams who want to ensure their pages are citation-ready for frontier AI answer engines.
-- **How to use**: Enter a public URL at [lumenyl.onrender.com](https://lumenyl.onrender.com/) or use the JSON API.
+- **How to use**: Enter a public URL at [lumenyl.vercel.app](https://lumenyl.vercel.app/) or use the JSON API.
 - **Cost**: Free and open source. No account or API key required.
 
 ## Dimensions evaluated
@@ -28,7 +28,7 @@ curl -s http://localhost:3000/api/audit \
 
 ## Links
 
-- [Lumenyl homepage](https://lumenyl.onrender.com/)
+- [Lumenyl homepage](https://lumenyl.vercel.app/)
 - [GitHub repository](https://github.com/jonathanau/ai-search-optimizer)
 - [ACM KDD 2024 GEO research](https://dl.acm.org/doi/10.1145/3637528.3671900)
 - [Gartner: Organic search traffic decline forecast](https://www.gartner.com/en/newsroom/press-releases/2024-10-21-gartner-forecasts-organic-search-traffic-will-decline-25-percent-by-2026-due-to-generative-ai-search-engines)
