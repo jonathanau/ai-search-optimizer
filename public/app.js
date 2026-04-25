@@ -51,7 +51,7 @@ function renderReport(report) {
 function scoreHero(report) {
   const panel = el("section", "panel score-hero");
   panel.innerHTML = `
-    <div class="score-circle" style="--score:${report.score.overall}">
+    <div class="score-circle" style="--score:${report.score.overall}%">
       <strong>${report.score.overall}</strong><span>/100</span>
     </div>
     <div class="score-copy">

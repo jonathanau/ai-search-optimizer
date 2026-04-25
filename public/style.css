@@ -303,21 +303,34 @@ main {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: conic-gradient(var(--brand) calc(var(--score) * 1%), rgba(255,255,255,0.08) 0);
+  /* Use the --score variable which now includes % unit */
+  background: conic-gradient(
+    var(--brand) 0%, 
+    var(--accent) var(--score), 
+    rgba(255, 255, 255, 0.1) var(--score), 
+    rgba(255, 255, 255, 0.1) 100%
+  );
   margin: auto;
   position: relative;
-  box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+  transition: transform 0.3s ease;
 }
 
 .score-circle::before {
   content: "";
   position: absolute;
-  inset: -4px;
+  inset: -2px;
   border-radius: 50%;
-  background: conic-gradient(var(--brand) calc(var(--score) * 1%), transparent 0);
-  filter: blur(12px);
+  background: conic-gradient(
+    var(--brand) 0%, 
+    var(--accent) var(--score), 
+    transparent var(--score), 
+    transparent 100%
+  );
+  filter: blur(15px);
   z-index: -1;
-  opacity: 0.6;
+  opacity: 0.8;
+  animation: pulseGlow 4s infinite alternate;
 }
 
 .score-circle::after {
