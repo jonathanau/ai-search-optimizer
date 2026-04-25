@@ -91,8 +91,6 @@ body {
   color: inherit;
 }
 
-.nav-brand span { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
-
 .nav-links {
   display: flex;
   gap: 24px;
