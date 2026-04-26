@@ -501,6 +501,26 @@ summary:hover { color: var(--brand-dark); }
   .benchmark-grid { grid-template-columns: 1fr; }
   .fact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .input-row { flex-direction: column; }
+
+  .hero-grid > div:first-child {
+    text-align: left;
+  }
+
+  .hero-grid > div:first-child .eyebrow {
+    display: block;
+    width: min(90vw, 680px);
+    margin-left: 0;
+    margin-right: 0;
+    text-align: justify;
+    text-align-last: left;
+    text-justify: inter-word;
+    max-width: 90vw;
+  }
+
+  .hero-grid > div:first-child h1,
+  .hero-grid > div:first-child .hero-copy {
+    text-align: left;
+  }
 }
 
 .content-section {
