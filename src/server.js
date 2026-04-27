@@ -12,6 +12,8 @@ const PORT = Number(process.env.PORT || 3000);
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_MAX_REQUESTS = 10;
 const rateLimitMap = new Map();
+const TRUSTED_PROXY_IPV4_RANGES = [/^10\./, /^127\./, /^172\.(1[6-9]|2\d|3[01])\./, /^192\.168\./];
+const TRUSTED_PROXY_IPV6_RANGES = [/^::1$/i, /^fc/i, /^fd/i, /^fe80:/i, /^::ffff:(10|127)\./i, /^::ffff:172\.(1[6-9]|2\d|3[01])\./i, /^::ffff:192\.168\./i];
 
 function isRateLimited(ip) {
   const now = Date.now();
@@ -22,6 +24,29 @@ function isRateLimited(ip) {
   }
   record.count += 1;
   return record.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
+function normalizeIp(value) {
+  return String(value || "").trim().replace(/^\[|\]$/g, "").toLowerCase();
+}
+
+function isTrustedProxyIp(value) {
+  const ip = normalizeIp(value);
+  if (!ip) return false;
+  return TRUSTED_PROXY_IPV4_RANGES.some((range) => range.test(ip)) || TRUSTED_PROXY_IPV6_RANGES.some((range) => range.test(ip));
+}
+
+function getClientIp(request) {
+  const remoteAddress = normalizeIp(request.socket.remoteAddress);
+  const forwardedAddress = String(request.headers["x-forwarded-for"] || "")
+    .split(",")[0]
+    ?.trim();
+
+  if (isTrustedProxyIp(remoteAddress) && forwardedAddress) {
+    return forwardedAddress;
+  }
+
+  return remoteAddress || "unknown";
 }
 
 setInterval(() => {
@@ -71,7 +96,7 @@ export function createServer() {
       }
 
       if (request.method === "POST" && requestUrl.pathname === "/api/audit") {
-        const clientIp = request.headers["x-forwarded-for"]?.split(",")[0]?.trim() || request.socket.remoteAddress || "unknown";
+        const clientIp = getClientIp(request);
         if (isRateLimited(clientIp)) {
           return sendJson(response, 429, { error: "Too many requests. Please wait before analyzing another URL." });
         }

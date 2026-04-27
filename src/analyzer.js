@@ -1,46 +1,85 @@
 import { lookup } from "node:dns/promises";
+import { isIP } from "node:net";
 
 const DEFAULT_TIMEOUT_MS = 12_000;
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024;
+const MAX_REDIRECTS = 5;
 
-const PRIVATE_IP_RANGES = [
+const NON_PUBLIC_IPV4_RANGES = [
   /^127\./,
   /^10\./,
   /^172\.(1[6-9]|2\d|3[01])\./,
   /^192\.168\./,
   /^169\.254\./,
+  /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./,
+  /^198\.(1[89])\./,
+  /^192\.0\.0\./,
   /^0\./,
+  /^255\.255\.255\.255$/,
+];
+
+const NON_PUBLIC_IPV6_RANGES = [
   /^::1$/,
+  /^::$/,
   /^fc/i,
   /^fd/i,
   /^fe80:/i,
+  /^::ffff:(127|10)\./i,
+  /^::ffff:172\.(1[6-9]|2\d|3[01])\./i,
+  /^::ffff:192\.168\./i,
+  /^::ffff:169\.254\./i,
+  /^::ffff:100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./i,
+  /^::ffff:198\.(1[89])\./i,
 ];
 
 const PRIVATE_HOSTNAMES = /^(localhost|.*\.local|.*\.internal|.*\.corp)$/i;
 
-async function validateNotPrivate(url) {
-  const parsed = new URL(url);
+function normalizeIpAddress(value) {
+  return String(value || "").trim().replace(/^\[|\]$/g, "").toLowerCase();
+}
+
+function isNonPublicIp(value) {
+  const address = normalizeIpAddress(value);
+  if (!address) return false;
+  const family = isIP(address);
+  if (family === 4) return NON_PUBLIC_IPV4_RANGES.some((range) => range.test(address));
+  if (family === 6) return NON_PUBLIC_IPV6_RANGES.some((range) => range.test(address));
+  return false;
+}
+
+export async function validatePublicUrl(url) {
+  const parsed = url instanceof URL ? new URL(url.href) : new URL(url);
   const hostname = parsed.hostname;
 
   if (PRIVATE_HOSTNAMES.test(hostname)) {
     throw new Error("Internal addresses are not allowed.");
   }
 
-  const bareHost = hostname.replace(/^\[|\]$/g, "");
-  if (/^\d+\.\d+\.\d+\.\d+$/.test(bareHost) || bareHost.includes(":")) {
-    if (PRIVATE_IP_RANGES.some((range) => range.test(bareHost))) {
-      throw new Error("Internal addresses are not allowed.");
-    }
+  if (isNonPublicIp(hostname)) {
+    throw new Error("Internal addresses are not allowed.");
   }
 
   try {
-    const { address } = await lookup(hostname);
-    if (PRIVATE_IP_RANGES.some((range) => range.test(address))) {
+    const addresses = await lookup(hostname, { all: true });
+    if (!addresses.length) {
+      throw new Error("Could not resolve the website hostname.");
+    }
+    if (addresses.some(({ address }) => isNonPublicIp(address))) {
       throw new Error("The resolved address is not publicly routable.");
     }
   } catch (error) {
     if (error.message.includes("not allowed") || error.message.includes("not publicly")) throw error;
     throw new Error("Could not resolve the website hostname.");
+  }
+}
+
+function getRedirectLocation(currentUrl, response) {
+  const location = response.headers.get("location");
+  if (!location) return null;
+  try {
+    return new URL(location, currentUrl).href;
+  } catch {
+    throw new Error("The target responded with an invalid redirect URL.");
   }
 }
 
@@ -266,15 +305,17 @@ export function assessCrawlerAccess(robots, userAgent, path = "/") {
 
 export async function auditWebsite(inputUrl, options = {}) {
   const target = normalizeAuditUrl(inputUrl);
-  await validateNotPrivate(target.href);
+  const validateUrl = options.validateUrl ?? validatePublicUrl;
+  await validateUrl(target);
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   const robotsUrl = new URL("/robots.txt", target.origin).href;
   const llmsUrl = new URL("/llms.txt", target.origin).href;
 
   const [page, robotsFetch, llmsFetch] = await Promise.all([
-    fetchText(target.href, { timeoutMs, accept: "text/html,application/xhtml+xml" }),
-    fetchOptionalText(robotsUrl, { timeoutMs: Math.min(timeoutMs, 6_000), accept: "text/plain,*/*" }),
-    fetchOptionalText(llmsUrl, { timeoutMs: Math.min(timeoutMs, 6_000), accept: "text/markdown,text/plain,*/*" }),
+    fetchText(target.href, { timeoutMs, accept: "text/html,application/xhtml+xml", fetchImpl, validateUrl }),
+    fetchOptionalText(robotsUrl, { timeoutMs: Math.min(timeoutMs, 6_000), accept: "text/plain,*/*", fetchImpl, validateUrl }),
+    fetchOptionalText(llmsUrl, { timeoutMs: Math.min(timeoutMs, 6_000), accept: "text/markdown,text/plain,*/*", fetchImpl, validateUrl }),
   ]);
 
   if (!page.ok) {
@@ -282,11 +323,7 @@ export async function auditWebsite(inputUrl, options = {}) {
   }
 
   const robots = robotsFetch.ok ? parseRobotsTxt(robotsFetch.text) : parseRobotsTxt("");
-  const sitemapCandidates = robots.sitemaps.length > 0 ? robots.sitemaps : [new URL("/sitemap.xml", target.origin).href];
-  const sitemapFetch = await fetchOptionalText(sitemapCandidates[0], {
-    timeoutMs: Math.min(timeoutMs, 6_000),
-    accept: "application/xml,text/xml,*/*",
-  });
+  const sitemapFetch = await fetchPrimarySitemap(robots.sitemaps, target, { timeoutMs, fetchImpl, validateUrl });
 
   return auditArtifacts({
     url: page.finalUrl || target.href,
@@ -1356,32 +1393,94 @@ async function fetchOptionalText(url, options) {
   }
 }
 
-async function fetchText(url, { timeoutMs = DEFAULT_TIMEOUT_MS, accept = "*/*" } = {}) {
+async function fetchPrimarySitemap(sitemapCandidates, target, { timeoutMs, fetchImpl, validateUrl }) {
+  const candidates = sitemapCandidates.length > 0 ? sitemapCandidates : [new URL("/sitemap.xml", target.origin).href];
+
+  for (const candidate of candidates) {
+    try {
+      const resolved = new URL(candidate, target.origin);
+      await validateUrl(resolved);
+      return await fetchOptionalText(resolved.href, {
+        timeoutMs: Math.min(timeoutMs, 6_000),
+        accept: "application/xml,text/xml,*/*",
+        fetchImpl,
+        validateUrl,
+      });
+    } catch (error) {
+      if (/not allowed|not publicly|not resolve|redirect url/i.test(error.message)) continue;
+      return { ok: false, status: 0, text: null, headers: {}, ms: 0, error: error.message, finalUrl: String(candidate) };
+    }
+  }
+
+  return { ok: false, status: 0, text: null, headers: {}, ms: 0, error: "No publicly reachable sitemap URL was available.", finalUrl: "" };
+}
+
+async function readResponseText(response, controller) {
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const chunks = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const chunk = value || new Uint8Array(0);
+    totalBytes += chunk.byteLength;
+    if (totalBytes > MAX_RESPONSE_BYTES) {
+      controller.abort();
+      throw new Error(`Response too large to analyze (>${Math.round(MAX_RESPONSE_BYTES / 1024)} KB).`);
+    }
+    chunks.push(chunk);
+  }
+
+  const buffer = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    buffer.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder().decode(buffer);
+}
+
+async function fetchText(url, { timeoutMs = DEFAULT_TIMEOUT_MS, accept = "*/*", fetchImpl = globalThis.fetch, validateUrl = validatePublicUrl } = {}) {
   const started = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(url, {
-      redirect: "follow",
-      signal: controller.signal,
-      headers: {
-        Accept: accept,
-        "User-Agent": "Lumenyl/0.1 (+https://lumenyl.vercel.app; AI readiness audit)",
-      },
-    });
-    const buffer = await response.arrayBuffer();
-    if (buffer.byteLength > MAX_RESPONSE_BYTES) {
-      throw new Error(`Response too large to analyze (${Math.round(buffer.byteLength / 1024)} KB).`);
+    let currentUrl = url;
+
+    for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+      await validateUrl(currentUrl);
+      const response = await fetchImpl(currentUrl, {
+        redirect: "manual",
+        signal: controller.signal,
+        headers: {
+          Accept: accept,
+          "User-Agent": "Lumenyl/0.1 (+https://lumenyl.vercel.app; AI readiness audit)",
+        },
+      });
+
+      if (response.status >= 300 && response.status < 400) {
+        const nextUrl = getRedirectLocation(currentUrl, response);
+        if (!nextUrl) {
+          throw new Error("The target responded with a redirect that did not include a Location header.");
+        }
+        currentUrl = nextUrl;
+        continue;
+      }
+
+      const text = await readResponseText(response, controller);
+      return {
+        ok: response.ok,
+        status: response.status,
+        text,
+        headers: normalizeHeaders(response.headers),
+        ms: Date.now() - started,
+        finalUrl: currentUrl,
+      };
     }
-    const text = new TextDecoder().decode(buffer);
-    return {
-      ok: response.ok,
-      status: response.status,
-      text,
-      headers: normalizeHeaders(response.headers),
-      ms: Date.now() - started,
-      finalUrl: response.url,
-    };
+
+    throw new Error(`Too many redirects. The limit is ${MAX_REDIRECTS}.`);
   } catch (error) {
     const message = error.name === "AbortError" ? `Request timed out after ${timeoutMs} ms.` : error.message;
     throw new Error(message);

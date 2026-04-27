@@ -1,8 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { ReadableStream } from "node:stream/web";
 
 import {
   auditArtifacts,
+  auditWebsite,
   assessCrawlerAccess,
   normalizeAuditUrl,
   parseRobotsTxt,
@@ -109,4 +111,83 @@ test("flags GEO blockers for JavaScript-thin pages and blocked AI retrieval bots
   assert.equal(report.sections.technical.checks.find((check) => check.id === "server-rendered-content").status, "fail");
   assert.equal(report.sections.content.checks.find((check) => check.id === "answer-first").status, "fail");
   assert.match(report.prioritizedActions[0].title, /crawler|server-render|answer/i);
+});
+
+test("blocks redirects to internal addresses during audit fetches", async () => {
+  const responses = new Map([
+    ["https://example.com/", new Response("", { status: 302, headers: { Location: "http://169.254.169.254/latest/meta-data" } })],
+    ["https://example.com/robots.txt", new Response("User-agent: *\nAllow: /", { status: 200 })],
+    ["https://example.com/llms.txt", new Response("", { status: 404 })],
+  ]);
+  const validateUrl = async (url) => {
+    const href = String(url);
+    if (/169\.254\.169\.254/.test(href)) throw new Error("Internal addresses are not allowed.");
+  };
+
+  await assert.rejects(
+    auditWebsite("https://example.com", {
+      validateUrl,
+      fetchImpl: async (url) => {
+        const response = responses.get(url);
+        if (!response) throw new Error(`unexpected fetch for ${url}`);
+        return response;
+      },
+    }),
+    /internal addresses|not publicly routable/i,
+  );
+});
+
+test("ignores sitemap URLs that resolve to internal addresses", async () => {
+  const seenUrls = [];
+  const responses = new Map([
+    ["https://example.com/", new Response(strongHtml, { status: 200, headers: { "Content-Type": "text/html" } })],
+    ["https://example.com/robots.txt", new Response("User-agent: *\nAllow: /\nSitemap: http://169.254.169.254/latest/meta-data", { status: 200 })],
+    ["https://example.com/llms.txt", new Response("", { status: 404 })],
+  ]);
+  const validateUrl = async (url) => {
+    const href = String(url);
+    if (/169\.254\.169\.254/.test(href)) throw new Error("Internal addresses are not allowed.");
+  };
+
+  const report = await auditWebsite("https://example.com", {
+    validateUrl,
+    fetchImpl: async (url) => {
+      seenUrls.push(url);
+      const response = responses.get(url);
+      if (!response) throw new Error(`unexpected fetch for ${url}`);
+      return response;
+    },
+  });
+
+  assert.equal(report.pageFacts.sitemapPresent, true);
+  assert.deepEqual(seenUrls, ["https://example.com/", "https://example.com/robots.txt", "https://example.com/llms.txt"]);
+});
+
+test("rejects oversized responses before buffering the full body", async () => {
+  const largeChunk = new Uint8Array(1024 * 1024).fill(65);
+
+  await assert.rejects(
+    auditWebsite("https://example.com", {
+      validateUrl: async () => {},
+      fetchImpl: async (url) => {
+        if (url === "https://example.com/") {
+          return new Response(
+            new ReadableStream({
+              start(controller) {
+                controller.enqueue(largeChunk);
+                controller.enqueue(largeChunk);
+                controller.enqueue(largeChunk);
+                controller.close();
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "text/html" } },
+          );
+        }
+        if (url === "https://example.com/robots.txt") return new Response("", { status: 404 });
+        if (url === "https://example.com/llms.txt") return new Response("", { status: 404 });
+        throw new Error(`unexpected fetch for ${url}`);
+      },
+    }),
+    /response too large/i,
+  );
 });
