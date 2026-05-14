@@ -1,5 +1,7 @@
 # Lumenyl AI Search Intelligence
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+
 A dependency-free Node.js web app for benchmarking a website's readiness for frontier AI answer engines. Lumenyl evaluates whether systems such as ChatGPT, Claude, Perplexity, Gemini / Google AI Overviews, and Microsoft Copilot can discover, understand, trust, extract, and cite a page.
 
 Lumenyl checks crawler access, server-rendered content, schema.org depth, answer-ready passages, evidence-backed claims, entity authority, `llms.txt`, sitemaps, and prioritized AI-search visibility actions.
